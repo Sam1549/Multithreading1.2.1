@@ -40,11 +40,15 @@ public class Main {
 
                     }
                 }
+
             }
         });
+        thread2.start();
 
-        Thread thread1 = new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
+        Thread thread1;
+        for (int i = 0; i < 10; i++) {
+
+             thread1 = new Thread(() -> {
                 String rout = generateRoute(LETTERS, ROUTE_LENGTH);
                 int amount = (int) rout.chars().filter(s -> s == 'R').count();
                 synchronized (sizeToFreq) {
@@ -55,19 +59,14 @@ public class Main {
                         sizeToFreq.put(amount, 1);
                     }
                 }
-            }
-            try {
-                thread2.join();
-            } catch (InterruptedException e) {
-                thread2.interrupt();
-                return;
-            }
-        });
 
+            });
 
-        thread1.start();
-        thread2.start();
-        thread1.interrupt();
+            thread1.start();
+            thread1.join();
+        }
+        thread2.interrupt();
+
 
 
     }
