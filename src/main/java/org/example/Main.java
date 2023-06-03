@@ -11,9 +11,9 @@ public class Main {
     final static int AMOUNT_OF_THREADS = 1000;
     public static final Map<Integer, Integer> sizeToFreq = new HashMap<>();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         generateThread();
-        watchMap();
+//        watchMap();
 
     }
 
@@ -26,20 +26,50 @@ public class Main {
         return route.toString();
     }
 
-    public static void generateThread() {
-        for (int i = 0; i < AMOUNT_OF_THREADS; i++) {
-            new Thread(() -> {
+    public static void generateThread() throws InterruptedException {
+
+        Thread thread2 = new Thread(() -> {
+            while (!Thread.interrupted()) {
+                synchronized (sizeToFreq) {
+                    try {
+                        sizeToFreq.wait();
+                        Map.Entry<Integer, Integer> maxSize = sizeToFreq.entrySet().stream().max(Map.Entry.comparingByValue()).get();
+                        System.out.format("на данный момент лидер %d (встретилось %d раз(а) )\n", maxSize.getKey(), maxSize.getValue());
+
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+            }
+        });
+
+        Thread thread1 = new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
                 String rout = generateRoute(LETTERS, ROUTE_LENGTH);
                 int amount = (int) rout.chars().filter(s -> s == 'R').count();
                 synchronized (sizeToFreq) {
+                    sizeToFreq.notify();
                     if (sizeToFreq.containsKey(amount)) {
                         sizeToFreq.put(amount, sizeToFreq.get(amount) + 1);
                     } else {
                         sizeToFreq.put(amount, 1);
                     }
                 }
-            }).start();
-        }
+            }
+            try {
+                thread2.join();
+            } catch (InterruptedException e) {
+                thread2.interrupt();
+                return;
+            }
+        });
+
+
+        thread1.start();
+        thread2.start();
+        thread1.interrupt();
+
+
     }
 
     public static void watchMap() {
