@@ -13,7 +13,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         generateThread();
-//        watchMap();
+        watchMap();
 
     }
 
@@ -37,7 +37,7 @@ public class Main {
                         System.out.format("на данный момент лидер %d (встретилось %d раз(а) )\n", maxSize.getKey(), maxSize.getValue());
 
                     } catch (InterruptedException e) {
-
+                        return;
                     }
                 }
 
@@ -46,9 +46,10 @@ public class Main {
         thread2.start();
 
         Thread thread1;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
 
-             thread1 = new Thread(() -> {
+            thread1 = new Thread(() -> {
+
                 String rout = generateRoute(LETTERS, ROUTE_LENGTH);
                 int amount = (int) rout.chars().filter(s -> s == 'R').count();
                 synchronized (sizeToFreq) {
@@ -61,12 +62,10 @@ public class Main {
                 }
 
             });
-
             thread1.start();
             thread1.join();
         }
         thread2.interrupt();
-
 
 
     }
