@@ -46,7 +46,7 @@ public class Main {
         thread2.start();
 
         Thread thread1;
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < AMOUNT_OF_THREADS; i++) {
 
             thread1 = new Thread(() -> {
 
