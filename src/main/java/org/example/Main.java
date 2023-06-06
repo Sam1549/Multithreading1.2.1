@@ -53,12 +53,13 @@ public class Main {
                 String rout = generateRoute(LETTERS, ROUTE_LENGTH);
                 int amount = (int) rout.chars().filter(s -> s == 'R').count();
                 synchronized (sizeToFreq) {
-                    sizeToFreq.notify();
+
                     if (sizeToFreq.containsKey(amount)) {
                         sizeToFreq.put(amount, sizeToFreq.get(amount) + 1);
                     } else {
                         sizeToFreq.put(amount, 1);
                     }
+                    sizeToFreq.notify();
                 }
 
             });
